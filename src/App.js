@@ -46,12 +46,7 @@ function App() {
   return (
     <div>
       <Greeting {...welcome} />
-      <Search
-        label="Search"
-        onSearch={handleSearch}
-        searchTerm={searchTerm}
-        value={searchTerm}
-      />
+      <Search label="Search" onSearch={handleSearch} search={searchTerm} />
       <hr />
       <List list={searchedStories} />
       <DeveloperList />
@@ -69,34 +64,31 @@ const Greeting = ({ greeting, title }) => {
   );
 };
 
-const Search = (props) => {
+const Search = ({ onSearch, label, search }) => {
   return (
     <div>
-      <label htmlFor="search">{props.label} </label>
-      <input
-        id="search"
-        type="text"
-        onChange={props.onSearch}
-        value={props.searchTerm}
-      />
+      <label htmlFor="search">{label} </label>
+      <input id="search" type="text" onChange={onSearch} value={search} />
       <p>
-        Searching for : <strong>{props.searchTerm}</strong>{" "}
+        Searching for : <strong>{search}</strong>{" "}
       </p>
     </div>
   );
 };
 
-const List = (props) =>
-  props.list.map((item) => (
-    <div key={item.ObjectID}>
-      <span>
-        <a href={item.url}>{item.title}</a>
-      </span>
-      <span> {item.author}</span>
-      <span> {item.num_comments}</span>
-      <span> {item.points}</span>
-    </div>
-  ));
+const List = ({ list }) =>
+  list.map(({ ObjectID, ...item }) => <Item key={ObjectID} {...item}></Item>);
+
+const Item = ({ url, title, author, num_comments, points }) => (
+  <div>
+    <span>
+      <a href={url}>{title}</a>
+    </span>
+    <span> {author}</span>
+    <span> {num_comments}</span>
+    <span> {points}</span>
+  </div>
+);
 
 const DeveloperList = () => {
   const John = new Person("John", "Snow");
