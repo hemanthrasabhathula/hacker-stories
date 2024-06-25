@@ -63,6 +63,7 @@ function App() {
         id="search"
         onInputChange={handleSearch}
         value={searchTerm}
+        isFocused
       >
         <Text>Search : </Text>
       </InputWithLabel>
@@ -90,16 +91,33 @@ const InputWithLabel = ({
   type = "text",
   onInputChange,
   value,
+  isFocused,
   children,
-}) => (
-  <>
-    <label htmlFor={id}> {children}</label>
-    <input id={id} type={type} onChange={onInputChange} value={value} />
-    <p>
-      Searching for : <strong>{value}</strong>
-    </p>
-  </>
-);
+}) => {
+  const inputRef = React.useRef();
+
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return (
+    <>
+      <label htmlFor={id}> {children}</label>
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        onChange={onInputChange}
+        value={value}
+      />
+      <p>
+        Searching for : <strong>{value}</strong>
+      </p>
+    </>
+  );
+};
 
 const List = ({ list }) =>
   list.map(({ ObjectID, ...item }) => <Item key={ObjectID} {...item}></Item>);
