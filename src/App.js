@@ -72,22 +72,20 @@ function App() {
 const Greeting = ({ greeting, title }) => {
   return (
     <h1>
-      {greeting}, to the {getWord("World")} of {title} !!{" "}
+      {greeting}, to the {getWord("World")} of {title} !!
     </h1>
   );
 };
 
-const Search = ({ onSearch, label, search }) => {
-  return (
-    <div>
-      <label htmlFor="search">{label} </label>
-      <input id="search" type="text" onChange={onSearch} value={search} />
-      <p>
-        Searching for : <strong>{search}</strong>{" "}
-      </p>
-    </div>
-  );
-};
+const Search = ({ onSearch, label, search }) => (
+  <>
+    <label htmlFor="search">{label} </label>
+    <input id="search" type="text" onChange={onSearch} value={search} />
+    <p>
+      Searching for : <strong>{search}</strong>
+    </p>
+  </>
+);
 
 const List = ({ list }) =>
   list.map(({ ObjectID, ...item }) => <Item key={ObjectID} {...item}></Item>);
