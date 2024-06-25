@@ -1,6 +1,6 @@
 import "./App.css";
 import Person from "./Person";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const react = "React JS";
 
@@ -42,12 +42,23 @@ const initialStories = [
   },
 ];
 
+const getAsyncStories = () =>
+  new Promise((resolve) => {
+    setTimeout(() => resolve({ data: { stories: initialStories } }), 2000);
+  });
+
 function App() {
   //  testFunction();
 
-  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "");
 
-  const [stories, setStories] = useState(initialStories);
+  const [stories, setStories] = useState([]);
+
+  useEffect(() => {
+    getAsyncStories().then((result) => {
+      setStories(result.data.stories);
+    });
+  }, []);
 
   const handleRemoveStory = (item) => {
     const newStories = stories.filter(
