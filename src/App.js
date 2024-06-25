@@ -61,10 +61,11 @@ function App() {
       <Greeting {...welcome} />
       <InputWithLabel
         id="search"
-        label="Search"
         onInputChange={handleSearch}
         value={searchTerm}
-      />
+      >
+        <Text>Search : </Text>
+      </InputWithLabel>
       <hr />
       <List list={searchedStories} />
       <DeveloperList />
@@ -82,9 +83,17 @@ const Greeting = ({ greeting, title }) => {
   );
 };
 
-const InputWithLabel = ({ id, label, type = "text", onInputChange, value }) => (
+const Text = ({ children }) => <strong>{children}</strong>;
+
+const InputWithLabel = ({
+  id,
+  type = "text",
+  onInputChange,
+  value,
+  children,
+}) => (
   <>
-    <label htmlFor={id}>{label}: </label>
+    <label htmlFor={id}> {children}</label>
     <input id={id} type={type} onChange={onInputChange} value={value} />
     <p>
       Searching for : <strong>{value}</strong>
