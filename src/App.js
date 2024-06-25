@@ -43,7 +43,7 @@ function App() {
     },
   ];
 
-  testFunction();
+  //  testFunction();
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
@@ -59,7 +59,12 @@ function App() {
   return (
     <div>
       <Greeting {...welcome} />
-      <Search label="Search" onSearch={handleSearch} search={searchTerm} />
+      <InputWithLabel
+        id="search"
+        label="Search"
+        onInputChange={handleSearch}
+        value={searchTerm}
+      />
       <hr />
       <List list={searchedStories} />
       <DeveloperList />
@@ -77,12 +82,12 @@ const Greeting = ({ greeting, title }) => {
   );
 };
 
-const Search = ({ onSearch, label, search }) => (
+const InputWithLabel = ({ id, label, type = "text", onInputChange, value }) => (
   <>
-    <label htmlFor="search">{label} </label>
-    <input id="search" type="text" onChange={onSearch} value={search} />
+    <label htmlFor={id}>{label}: </label>
+    <input id={id} type={type} onChange={onInputChange} value={value} />
     <p>
-      Searching for : <strong>{search}</strong>
+      Searching for : <strong>{value}</strong>
     </p>
   </>
 );
@@ -104,7 +109,7 @@ const Item = ({ url, title, author, num_comments, points }) => (
 const DeveloperList = () => {
   const John = new Person("John", "Snow");
   const Tyrion = new Person("Tyrion", "Lannister");
-  console.log(John);
+  // console.log(John);
   return (
     <div>
       <Developer person={John} />
@@ -131,11 +136,11 @@ const Developer2 = ({ firstname, lastname }) => {
   );
 };
 
-const testFunction = () => {
-  console.log("------------------ TEST FUNCTION ------------------");
-  const numbers = [1, 4, 9, 16];
-  const newNumbers = numbers.map((number) => number * 20);
-  console.log(newNumbers);
-};
+// const testFunction = () => {
+//   console.log("------------------ TEST FUNCTION ------------------");
+//   const numbers = [1, 4, 9, 16];
+//   const newNumbers = numbers.map((number) => number * 20);
+//   console.log(newNumbers);
+// };
 
 export default App;
