@@ -83,6 +83,7 @@ const storiesReducer = (state, action) => {
   }
 };
 
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 function App() {
   //  testFunction();
 
@@ -103,20 +104,31 @@ function App() {
   useEffect(() => {
     //setIsLoading(true);
     dispatchStories({ type: "STORIES_FETCH_INIT" });
-    getAsyncStories()
+    fetch(`${API_ENDPOINT}react`)
+      .then((response) => {
+        return response.json();
+      })
       .then((result) => {
         dispatchStories({
           type: "STORIES_FETCH_SUCCESS",
-          payload: result.data.stories,
+          payload: result.hits,
         });
-        //setIsLoading(false);
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
+    // getAsyncStories()
+    //   .then((result) => {
+    //     dispatchStories({
+    //       type: "STORIES_FETCH_SUCCESS",
+    //       payload: result.data.stories,
+    //     });
+    //     //setIsLoading(false);
+    //   })
+    //   .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
   }, []);
 
   const handleRemoveStory = (item) => {
     dispatchStories({ type: "REMOVE_STORIES", payload: item });
-    const newStories = stories.filter(
+    const newStories = stories.data.filter(
       (story) => story.ObjectID !== item.ObjectID
     );
 
