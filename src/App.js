@@ -1,6 +1,6 @@
 import "./App.css";
 import Person from "./Person";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 
 const react = "React JS";
 
@@ -47,12 +47,35 @@ const getAsyncStories = () =>
     setTimeout(() => resolve({ data: { stories: initialStories } }), 2000);
   });
 
+const storiesReducer = (state, action) => {
+  // if (action.type === "SET_STORIES") {
+  //   return action.payload;
+  // } else if (action.type === "REMOVE_STORIES") {
+  //   return state.filter((story) => story.ObjectID !== action.payload.ObjectID);
+  // } else {
+  //   throw new Error();
+  // }
+  console.log("From the storiesReducer", state);
+  switch (action.type) {
+    case "SET_STORIES":
+      return action.payload;
+    case "REMOVE_STORIES":
+      return state.filter(
+        (story) => story.ObjectID !== action.payload.ObjectID
+      );
+    default:
+      throw new Error();
+  }
+};
+
 function App() {
   //  testFunction();
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "");
 
-  const [stories, setStories] = useState([]);
+  //const [stories, setStories] = useState([]);
+
+  const [stories, dispatchStories] = useReducer(storiesReducer, []);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,18 +85,20 @@ function App() {
     setIsLoading(true);
     getAsyncStories()
       .then((result) => {
-        setStories(result.data.stories);
+        dispatchStories({ type: "SET_STORIES", payload: result.data.stories });
         setIsLoading(false);
       })
       .catch(() => setIsError(true));
   }, []);
 
   const handleRemoveStory = (item) => {
+    dispatchStories({ type: "REMOVE_STORIES", payload: item });
     const newStories = stories.filter(
       (story) => story.ObjectID !== item.ObjectID
     );
 
-    setStories(newStories);
+    dispatchStories({ type: "SET_STORIES", payload: newStories });
+    //setStories(newStories);
   };
 
   const handleSearch = (event) => {
@@ -85,6 +110,8 @@ function App() {
   const searchedStories = stories.filter((story) =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  console.log("------------------ APP FUNCTION ------------------");
   return (
     <div>
       <Greeting {...welcome} />
