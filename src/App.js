@@ -23,30 +23,30 @@ const useSemiPersistentState = (key, initialState) => {
   return [value, setValue];
 };
 
-const initialStories = [
-  {
-    title: "React",
-    url: "https://reactjs.org/",
-    author: "Jordan Walke",
-    num_comments: 3,
-    points: 4,
-    ObjectID: 0,
-  },
-  {
-    title: "Redux",
-    url: "https://redux.js.org/",
-    author: "Dan Abramov, Andrew Clark",
-    num_comments: 2,
-    points: 5,
-    ObjectID: 1,
-  },
-];
+// const initialStories = [
+//   {
+//     title: "React",
+//     url: "https://reactjs.org/",
+//     author: "Jordan Walke",
+//     num_comments: 3,
+//     points: 4,
+//     ObjectID: 0,
+//   },
+//   {
+//     title: "Redux",
+//     url: "https://redux.js.org/",
+//     author: "Dan Abramov, Andrew Clark",
+//     num_comments: 2,
+//     points: 5,
+//     ObjectID: 1,
+//   },
+// ];
 
-const getAsyncStories = () =>
-  new Promise((resolve, reject) => {
-    setTimeout(reject, 2000);
-    //setTimeout(() => resolve({ data: { stories: initialStories } }), 2000);
-  });
+// const getAsyncStories = () =>
+//   new Promise((resolve, reject) => {
+//     //setTimeout(reject, 2000);
+//     setTimeout(() => resolve({ data: { stories: initialStories } }), 2000);
+//   });
 
 const storiesReducer = (state, action) => {
   // if (action.type === "SET_STORIES") {
@@ -69,13 +69,11 @@ const storiesReducer = (state, action) => {
       };
     case "STORIES_FETCH_FAILURE":
       return { ...state, isLoading: false, isError: true };
-    case "SET_STORIES":
-      return action.payload;
-    case "REMOVE_STORIES":
+    case "REMOVE_STORY":
       return {
         ...state,
         data: state.data.filter(
-          (story) => story.ObjectID !== action.payload.ObjectID
+          (story) => story.objectID !== action.payload.objectID
         ),
       };
     default:
@@ -127,12 +125,12 @@ function App() {
   }, []);
 
   const handleRemoveStory = (item) => {
-    dispatchStories({ type: "REMOVE_STORIES", payload: item });
-    const newStories = stories.data.filter(
-      (story) => story.ObjectID !== item.ObjectID
-    );
+    dispatchStories({ type: "REMOVE_STORY", payload: item });
+    // const newStories = stories.data.filter(
+    //   (story) => story.ObjectID !== item.ObjectID
+    // );
 
-    dispatchStories({ type: "SET_STORIES", payload: newStories });
+    //dispatchStories({ type: "SET_STORIES", payload: newStories });
     //setStories(newStories);
   };
 
@@ -218,7 +216,7 @@ const InputWithLabel = ({
 
 const List = ({ list, onRemoveItem }) =>
   list.map((item) => (
-    <Item key={item.ObjectID} item={item} onRemoveItem={onRemoveItem}></Item>
+    <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem}></Item>
   ));
 
 const Item = ({ item, onRemoveItem }) => {
