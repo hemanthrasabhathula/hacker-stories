@@ -1,6 +1,7 @@
 import "./App.css";
 import Person from "./Person";
 import React, { useCallback, useEffect, useReducer, useState } from "react";
+import axios from "axios";
 
 const react = "React JS";
 
@@ -104,14 +105,12 @@ function App() {
   };
   const handleFetchStories = useCallback(() => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
-    fetch(url)
-      .then((response) => {
-        return response.json();
-      })
+    axios
+      .get(url)
       .then((result) => {
         dispatchStories({
           type: "STORIES_FETCH_SUCCESS",
-          payload: result.hits,
+          payload: result.data.hits,
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
