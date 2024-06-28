@@ -8,4 +8,3 @@ class Person {
     return this.firstname + " " + this.lastname;
   }
 }
-c;
