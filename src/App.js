@@ -1,9 +1,9 @@
 import "./App.css";
-import Person from "./Person";
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import axios from "axios";
 import { Button, TextField } from "@mui/material";
 
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 const react = "React JS";
 
 const welcome = {
@@ -16,7 +16,7 @@ const getWord = (word) => word;
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
-  React.useEffect(() => {
+  useEffect(() => {
     localStorage.setItem(key, value);
   }, [value, key]);
 
@@ -48,7 +48,6 @@ const storiesReducer = (state, action) => {
   }
 };
 
-const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 function App() {
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
@@ -100,6 +99,7 @@ function App() {
         onSearchSubmit={handleSearchSubmit}
       />
       <hr />
+
       {stories.isError && <p>Something went wrong ....</p>}
       {stories.isLoading ? (
         <p>Loading ... </p>
@@ -115,7 +115,7 @@ function App() {
 const Greeting = ({ greeting, title }) => {
   return (
     <h1>
-      {greeting}, to the {getWord("World")} of {title} !!
+      {greeting}!! to the {getWord("World")} of {title}
     </h1>
   );
 };
