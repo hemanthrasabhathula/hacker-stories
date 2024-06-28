@@ -2,6 +2,7 @@ import "./App.css";
 import Person from "./Person";
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import axios from "axios";
+import { Button, TextField } from "@mui/material";
 
 const react = "React JS";
 
@@ -152,9 +153,15 @@ function App() {
       >
         <Text>Search : </Text>
       </InputWithLabel>
-      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
+      {"  "}
+      <Button
+        variant="contained"
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSearchSubmit}
+      >
         Submit
-      </button>
+      </Button>
       <hr />
       {stories.isError && <p>Something went wrong ....</p>}
       {stories.isLoading ? (
@@ -199,7 +206,9 @@ const InputWithLabel = ({
   return (
     <>
       <label htmlFor={id}> {children}</label>
-      <input
+      <TextField
+        variant="outlined"
+        size="small"
         ref={inputRef}
         id={id}
         type={type}
