@@ -93,15 +93,18 @@ function App() {
     isError: false,
   });
 
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+
   // const [isLoading, setIsLoading] = useState(false);
 
   // const [isError, setIsError] = useState(false);
 
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+  };
   const handleFetchStories = useCallback(() => {
-    if (searchTerm === "") return;
-
     dispatchStories({ type: "STORIES_FETCH_INIT" });
-    fetch(`${API_ENDPOINT}${searchTerm}`)
+    fetch(url)
       .then((response) => {
         return response.json();
       })
@@ -112,7 +115,7 @@ function App() {
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-  }, [searchTerm]);
+  }, [url]);
 
   useEffect(() => {
     handleFetchStories();
@@ -150,6 +153,9 @@ function App() {
       >
         <Text>Search : </Text>
       </InputWithLabel>
+      <button type="button" disabled={!searchTerm} onClick={handleSearchSubmit}>
+        Submit
+      </button>
       <hr />
       {stories.isError && <p>Something went wrong ....</p>}
       {stories.isLoading ? (
@@ -201,9 +207,9 @@ const InputWithLabel = ({
         onChange={onInputChange}
         value={value}
       />
-      <p>
+      {/* <p>
         Searching for : <strong>{value}</strong>
-      </p>
+      </p> */}
     </>
   );
 };
