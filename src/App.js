@@ -12,9 +12,7 @@ const welcome = {
 const getWord = (word) => word;
 
 const useSemiPersistentState = (key, initialState) => {
-  const [value, setValue] = React.useState(
-    localStorage.getItem(key) || initialState
-  );
+  const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
   React.useEffect(() => {
     localStorage.setItem(key, value);
@@ -85,7 +83,7 @@ const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 function App() {
   //  testFunction();
 
-  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "");
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
   //const [stories, setStories] = useState([]);
 
@@ -101,8 +99,11 @@ function App() {
 
   useEffect(() => {
     //setIsLoading(true);
+
+    if (searchTerm === "") return;
+
     dispatchStories({ type: "STORIES_FETCH_INIT" });
-    fetch(`${API_ENDPOINT}react`)
+    fetch(`${API_ENDPOINT}${searchTerm}`)
       .then((response) => {
         return response.json();
       })
@@ -122,7 +123,7 @@ function App() {
     //     //setIsLoading(false);
     //   })
     //   .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-  }, []);
+  }, [searchTerm]);
 
   const handleRemoveStory = (item) => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
@@ -140,9 +141,9 @@ function App() {
     //localStorage.setItem("search", event.target.value);
   };
 
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const searchedStories = stories.data.filter((story) =>
+  //   story.title.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   console.log("------------------ APP FUNCTION ------------------");
   return (
@@ -161,7 +162,7 @@ function App() {
       {stories.isLoading ? (
         <p>Loading ... </p>
       ) : (
-        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
       )}
 
       <DeveloperList />
