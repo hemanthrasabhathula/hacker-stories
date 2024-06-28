@@ -1,6 +1,6 @@
 import "./App.css";
 import Person from "./Person";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 
 const react = "React JS";
 
@@ -97,9 +97,7 @@ function App() {
 
   // const [isError, setIsError] = useState(false);
 
-  useEffect(() => {
-    //setIsLoading(true);
-
+  const handleFetchStories = useCallback(() => {
     if (searchTerm === "") return;
 
     dispatchStories({ type: "STORIES_FETCH_INIT" });
@@ -114,16 +112,11 @@ function App() {
         });
       })
       .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
-    // getAsyncStories()
-    //   .then((result) => {
-    //     dispatchStories({
-    //       type: "STORIES_FETCH_SUCCESS",
-    //       payload: result.data.stories,
-    //     });
-    //     //setIsLoading(false);
-    //   })
-    //   .catch(() => dispatchStories({ type: "STORIES_FETCH_FAILURE" }));
   }, [searchTerm]);
+
+  useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
 
   const handleRemoveStory = (item) => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
