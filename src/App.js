@@ -1,7 +1,8 @@
 import "./App.css";
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import axios from "axios";
-import { Button, TextField } from "@mui/material";
+import styles from "./App.module.css";
+import { ReactComponent as Check } from "./check.svg";
 
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 const react = "React JS";
@@ -91,14 +92,14 @@ function App() {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <Greeting {...welcome} />
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearch}
         onSearchSubmit={handleSearchSubmit}
+        buttonStyle="button_large"
       />
-      <hr />
 
       {stories.isError && <p>Something went wrong ....</p>}
       {stories.isLoading ? (
@@ -114,7 +115,7 @@ function App() {
 
 const Greeting = ({ greeting, title }) => {
   return (
-    <h1>
+    <h1 className={styles.headlinePrimary}>
       {greeting}!! to the {getWord("World")} of {title}
     </h1>
   );
@@ -140,10 +141,12 @@ const InputWithLabel = ({
 
   return (
     <>
-      <label htmlFor={id}> {children}</label>
-      <TextField
-        variant="outlined"
-        size="small"
+      <label htmlFor={id} className={styles.label}>
+        {children}
+      </label>
+
+      <input
+        className={styles.input}
         ref={inputRef}
         id={id}
         type={type}
@@ -154,9 +157,14 @@ const InputWithLabel = ({
   );
 };
 
-const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => {
+const SearchForm = ({
+  searchTerm,
+  onSearchInput,
+  onSearchSubmit,
+  buttonStyle,
+}) => {
   return (
-    <form onSubmit={onSearchSubmit}>
+    <form onSubmit={onSearchSubmit} className={styles.searchForm}>
       <InputWithLabel
         id="search"
         onInputChange={onSearchInput}
@@ -165,9 +173,14 @@ const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => {
       >
         <Text>Search : </Text>
       </InputWithLabel>
-      <Button variant="contained" type="submit" disabled={!searchTerm}>
+      <button
+        className={`${styles.button} ${buttonStyle}`}
+        variant="contained"
+        type="submit"
+        disabled={!searchTerm}
+      >
         Submit
-      </Button>
+      </button>
     </form>
   );
 };
@@ -179,16 +192,22 @@ const List = ({ list, onRemoveItem }) =>
 
 const Item = ({ item, onRemoveItem }) => {
   return (
-    <div>
-      <span>
+    <div className={styles.item}>
+      <span style={{ width: "40%" }}>
         <a href={item.url}>{item.title}</a>
       </span>
-      <span> {item.author}</span>
-      <span> {item.num_comments}</span>
-      <span> {item.points} </span>
-      <button type="button" onClick={() => onRemoveItem(item)}>
-        Dismiss
-      </button>
+      <span style={{ width: "30%" }}> {item.author}</span>
+      <span style={{ width: "10%" }}> {item.num_comments}</span>
+      <span style={{ width: "10%" }}> {item.points} </span>
+      <span style={{ width: "10%" }}>
+        <button
+          className={`${styles.button} ${styles.buttonSmall}`}
+          type="button"
+          onClick={() => onRemoveItem(item)}
+        >
+          <Check height="18px" width="18px" />
+        </button>
+      </span>
     </div>
   );
 };
