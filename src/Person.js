@@ -8,4 +8,4 @@ class Person {
     return this.firstname + " " + this.lastname;
   }
 }
-export default Person;
+c;
