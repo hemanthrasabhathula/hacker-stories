@@ -23,40 +23,7 @@ const useSemiPersistentState = (key, initialState) => {
   return [value, setValue];
 };
 
-// const initialStories = [
-//   {
-//     title: "React",
-//     url: "https://reactjs.org/",
-//     author: "Jordan Walke",
-//     num_comments: 3,
-//     points: 4,
-//     ObjectID: 0,
-//   },
-//   {
-//     title: "Redux",
-//     url: "https://redux.js.org/",
-//     author: "Dan Abramov, Andrew Clark",
-//     num_comments: 2,
-//     points: 5,
-//     ObjectID: 1,
-//   },
-// ];
-
-// const getAsyncStories = () =>
-//   new Promise((resolve, reject) => {
-//     //setTimeout(reject, 2000);
-//     setTimeout(() => resolve({ data: { stories: initialStories } }), 2000);
-//   });
-
 const storiesReducer = (state, action) => {
-  // if (action.type === "SET_STORIES") {
-  //   return action.payload;
-  // } else if (action.type === "REMOVE_STORIES") {
-  //   return state.filter((story) => story.ObjectID !== action.payload.ObjectID);
-  // } else {
-  //   throw new Error();
-  // }
-  console.log("From the storiesReducer", state);
   switch (action.type) {
     case "STORIES_FETCH_INIT":
       return { ...state, isLoading: true, isError: false };
@@ -83,11 +50,7 @@ const storiesReducer = (state, action) => {
 
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 function App() {
-  //  testFunction();
-
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
-
-  //const [stories, setStories] = useState([]);
 
   const [stories, dispatchStories] = useReducer(storiesReducer, {
     data: [],
@@ -96,10 +59,6 @@ function App() {
   });
 
   const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
-
-  // const [isLoading, setIsLoading] = useState(false);
-
-  // const [isError, setIsError] = useState(false);
 
   const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
@@ -126,25 +85,12 @@ function App() {
 
   const handleRemoveStory = (item) => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
-    // const newStories = stories.data.filter(
-    //   (story) => story.ObjectID !== item.ObjectID
-    // );
-
-    //dispatchStories({ type: "SET_STORIES", payload: newStories });
-    //setStories(newStories);
   };
 
   const handleSearch = (event) => {
-    console.log("From the handleSearch ", event.target.value);
     setSearchTerm(event.target.value);
-    //localStorage.setItem("search", event.target.value);
   };
 
-  // const searchedStories = stories.data.filter((story) =>
-  //   story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
-
-  console.log("------------------ APP FUNCTION ------------------");
   return (
     <div>
       <Greeting {...welcome} />
@@ -160,8 +106,6 @@ function App() {
       ) : (
         <List list={stories.data} onRemoveItem={handleRemoveStory} />
       )}
-
-      <DeveloperList />
     </div>
   );
 }
@@ -206,9 +150,6 @@ const InputWithLabel = ({
         onChange={onInputChange}
         value={value}
       />
-      {/* <p>
-        Searching for : <strong>{value}</strong>
-      </p> */}
     </>
   );
 };
@@ -237,10 +178,6 @@ const List = ({ list, onRemoveItem }) =>
   ));
 
 const Item = ({ item, onRemoveItem }) => {
-  // const handleRemoveItem = () => {
-  //   onRemoveItem(item);
-  // };
-
   return (
     <div>
       <span>
@@ -255,42 +192,5 @@ const Item = ({ item, onRemoveItem }) => {
     </div>
   );
 };
-
-const DeveloperList = () => {
-  const John = new Person("John", "Snow");
-  const Tyrion = new Person("Tyrion", "Lannister");
-  // console.log(John);
-  return (
-    <div>
-      <Developer person={John} />
-      <Developer2 {...Tyrion} />
-    </div>
-  );
-};
-
-const Developer = (props) => {
-  return (
-    <div>
-      <h4>{props.person.getName()}</h4>
-    </div>
-  );
-};
-
-const Developer2 = ({ firstname, lastname }) => {
-  return (
-    <div>
-      <h4>
-        {firstname} {lastname}
-      </h4>
-    </div>
-  );
-};
-
-// const testFunction = () => {
-//   console.log("------------------ TEST FUNCTION ------------------");
-//   const numbers = [1, 4, 9, 16];
-//   const newNumbers = numbers.map((number) => number * 20);
-//   console.log(newNumbers);
-// };
 
 export default App;
