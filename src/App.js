@@ -101,8 +101,9 @@ function App() {
 
   // const [isError, setIsError] = useState(false);
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
+    event.preventDefault();
   };
   const handleFetchStories = useCallback(async () => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
@@ -147,23 +148,11 @@ function App() {
   return (
     <div>
       <Greeting {...welcome} />
-      <InputWithLabel
-        id="search"
-        onInputChange={handleSearch}
-        value={searchTerm}
-        isFocused
-      >
-        <Text>Search : </Text>
-      </InputWithLabel>
-      {"  "}
-      <Button
-        variant="contained"
-        type="button"
-        disabled={!searchTerm}
-        onClick={handleSearchSubmit}
-      >
-        Submit
-      </Button>
+      <SearchForm
+        searchTerm={searchTerm}
+        onSearchInput={handleSearch}
+        onSearchSubmit={handleSearchSubmit}
+      />
       <hr />
       {stories.isError && <p>Something went wrong ....</p>}
       {stories.isLoading ? (
@@ -221,6 +210,24 @@ const InputWithLabel = ({
         Searching for : <strong>{value}</strong>
       </p> */}
     </>
+  );
+};
+
+const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => {
+  return (
+    <form onSubmit={onSearchSubmit}>
+      <InputWithLabel
+        id="search"
+        onInputChange={onSearchInput}
+        value={searchTerm}
+        isFocused
+      >
+        <Text>Search : </Text>
+      </InputWithLabel>
+      <Button variant="contained" type="submit" disabled={!searchTerm}>
+        Submit
+      </Button>
+    </form>
   );
 };
 
