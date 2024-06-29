@@ -1,5 +1,12 @@
 import "./App.css";
-import React, { useCallback, useEffect, useReducer, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
 import styles from "./App.module.css";
 import { ReactComponent as Check } from "./check.svg";
@@ -15,10 +22,17 @@ const welcome = {
 const getWord = (word) => word;
 
 const useSemiPersistentState = (key, initialState) => {
+  const isMounted = useRef(false);
+
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
 
   useEffect(() => {
-    localStorage.setItem(key, value);
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      console.log("A");
+      localStorage.setItem(key, value);
+    }
   }, [value, key]);
 
   return [value, setValue];
@@ -90,6 +104,8 @@ function App() {
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
+
+  console.log("B:App");
 
   return (
     <div className={styles.container}>
@@ -185,10 +201,13 @@ const SearchForm = ({
   );
 };
 
-const List = ({ list, onRemoveItem }) =>
-  list.map((item) => (
-    <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem}></Item>
-  ));
+const List = memo(
+  ({ list, onRemoveItem }) =>
+    console.log("B:List") ||
+    list.map((item) => (
+      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem}></Item>
+    ))
+);
 
 const Item = ({ item, onRemoveItem }) => {
   return (
