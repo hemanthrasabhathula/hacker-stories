@@ -3,6 +3,7 @@ import React, {
   memo,
   useCallback,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -63,6 +64,11 @@ const storiesReducer = (state, action) => {
   }
 };
 
+const getSumComments = (stories) => {
+  console.log("C");
+  return stories.data.reduce((result, value) => result + value.num_comments, 0);
+};
+
 function App() {
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
 
@@ -97,9 +103,9 @@ function App() {
     handleFetchStories();
   }, [handleFetchStories]);
 
-  const handleRemoveStory = (item) => {
+  const handleRemoveStory = useCallback((item) => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
-  };
+  }, []);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -107,9 +113,11 @@ function App() {
 
   console.log("B:App");
 
+  const sumComments = useMemo(() => getSumComments(stories), [stories]);
   return (
     <div className={styles.container}>
       <Greeting {...welcome} />
+      <h1>My Hacker Stories with {sumComments} comments.</h1>
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearch}
