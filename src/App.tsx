@@ -221,6 +221,7 @@ const App = () => {
       />
       {lastSearches.map((searchTerm, index) => (
         <button
+          className={`${styles.button} ${styles.buttonSmall}`}
           key={searchTerm + index}
           type="button"
           onClick={() => handleLastSearch(searchTerm)}
