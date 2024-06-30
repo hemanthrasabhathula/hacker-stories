@@ -16,6 +16,7 @@ type ItemProps = {
 
 type StoriesState = {
   data: Stories;
+  page: number;
   isLoading: boolean;
   isError: boolean;
 };

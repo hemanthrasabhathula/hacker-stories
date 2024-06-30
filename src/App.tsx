@@ -16,6 +16,14 @@ import { StoriesState, Stories, Story } from "./definitions";
 import { SearchForm } from "./SearchForm";
 import { List } from "./List";
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
+
+const API_BASE = "https://hn.algolia.com/api/v1";
+const API_SEARCH = "/search";
+const PARAM_SEARCH = "query=";
+const PARAM_PAGE = "page=";
+const getUrl = (searchTerm: string, page: number) =>
+  `${API_BASE}${API_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`;
+
 const react = "React JS";
 
 const welcome = {
@@ -24,6 +32,11 @@ const welcome = {
 };
 
 const getWord = (word: string) => word;
+
+const extractSearchTerm = (url: string) =>
+  url
+    .substring(url.lastIndexOf("?") + 1, url.indexOf("&"))
+    .replace(PARAM_SEARCH, "");
 
 const useSemiPersistentState = (
   key: string,
@@ -54,7 +67,11 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
         ...state,
         isLoading: false,
         isError: false,
-        data: action.payload,
+        data:
+          action.payload.page === 0
+            ? action.payload.list
+            : state.data.concat(action.payload.list),
+        page: action.payload.page,
       };
     case "STORIES_FETCH_FAILURE":
       return { ...state, isLoading: false, isError: true };
@@ -80,7 +97,10 @@ interface StoriesFetchInitAction {
 }
 interface StoriesFetchSuccessAction {
   type: "STORIES_FETCH_SUCCESS";
-  payload: Stories;
+  payload: {
+    list: Stories;
+    page: number;
+  };
 }
 
 interface StoriesFetchFailureAction {
@@ -103,30 +123,77 @@ const App = () => {
 
   const [stories, dispatchStories] = useReducer(storiesReducer, {
     data: [],
+    page: 0,
     isLoading: false,
     isError: false,
   });
 
-  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+  const [urls, setUrls] = useState([getUrl(searchTerm, 0)]);
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    handleSearch(searchTerm, 0);
     event.preventDefault();
   };
+
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleLastSearch = (searhTerm: string) => {
+    handleSearch(searhTerm, 0);
+  };
+
+  const handleSearch = (searchTerm: string, page: number) => {
+    const url = getUrl(searchTerm, page);
+
+    setUrls(urls.concat(url));
+    setSearchTerm(searchTerm);
+  };
+
+  const handleMore = () => {
+    const lastUrl = urls[urls.length - 1];
+    const searchTerm = extractSearchTerm(lastUrl);
+    handleSearch(searchTerm, stories.page + 1);
+  };
+
+  const getLastSearches = (urls: string[]) =>
+    urls
+      .reduce((result: string[], url, index) => {
+        const currentSearchTerm = extractSearchTerm(url);
+
+        if (index === 0) {
+          return result.concat(currentSearchTerm);
+        }
+
+        const previousSearchTerm = result[result.length - 1];
+
+        if (searchTerm === previousSearchTerm) {
+          return result;
+        } else {
+          return result.concat(currentSearchTerm);
+        }
+      }, [])
+      .slice(-6)
+      .slice(0, -1);
+
   const handleFetchStories = useCallback(async () => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
     try {
-      const result = await axios.get(url);
+      const lastUrl = urls[urls.length - 1];
+      const result = await axios.get(lastUrl);
 
       dispatchStories({
         type: "STORIES_FETCH_SUCCESS",
-        payload: result.data.hits,
+        payload: {
+          list: result.data.hits,
+          page: result.data.page,
+        },
       });
     } catch {
       dispatchStories({ type: "STORIES_FETCH_FAILURE" });
     }
-  }, [url]);
+  }, [urls]);
 
   useEffect(() => {
     handleFetchStories();
@@ -136,29 +203,48 @@ const App = () => {
     dispatchStories({ type: "REMOVE_STORY", payload: item });
   }, []);
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
   console.log("B:App");
 
   const sumComments = useMemo(() => getSumComments(stories), [stories]);
+
+  const lastSearches = getLastSearches(urls);
+
   return (
     <div className={styles.container}>
       <Greeting {...welcome} />
       <h1>My Hacker Stories with {sumComments} comments.</h1>
       <SearchForm
         searchTerm={searchTerm}
-        onSearchInput={handleSearch}
+        onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
         buttonStyle="button_large"
       />
+      {lastSearches.map((searchTerm, index) => (
+        <button
+          key={searchTerm + index}
+          type="button"
+          onClick={() => handleLastSearch(searchTerm)}
+        >
+          {searchTerm}
+        </button>
+      ))}
 
       {stories.isError && <p>Something went wrong ....</p>}
       {stories.isLoading ? (
         <p>Loading ... </p>
       ) : (
         <List list={stories.data} onRemoveItem={handleRemoveStory} />
+      )}
+      {stories.isLoading ? (
+        <p>Loading ...</p>
+      ) : (
+        <button
+          className={`${styles.button} ${styles.buttonLarge}`}
+          type="button"
+          onClick={handleMore}
+        >
+          More
+        </button>
       )}
     </div>
   );

@@ -38,12 +38,11 @@
 }
 
 .container {
-  height: 100vw;
   padding: 20px;
   background: #83a4d4;
   background: linear-gradient(to left, #b6fbff, #83a4d4);
-
   color: #171212;
+  min-height: 100vh;
 }
 
 .headlinePrimary {
@@ -114,6 +113,20 @@
 }
 
 .button:hover > svg > g {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+
+.buttonActive {
+  background: #171212;
+  color: #ffffff;
+}
+
+.button:hover > svg {
+  fill: #ffffff;
+  stroke: #ffffff;
+}
+.buttonActive > svg {
   fill: #ffffff;
   stroke: #ffffff;
 }
